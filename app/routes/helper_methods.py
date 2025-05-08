@@ -18,8 +18,7 @@ def validate_model(cls, model_id):
 
     return model
 
-def helper_model_from_dict(cls, request_body):
-    required_fields = ["title", "description"]
+def helper_model_from_dict(cls, request_body, required_fields = ["title", "description"]):
     for field in required_fields:
         if field not in request_body:
             abort(make_response({"details": "Invalid data"}, 400))
@@ -29,7 +28,7 @@ def helper_model_from_dict(cls, request_body):
     db.session.add(new_instance)
     db.session.commit()
 
-    return {"task": new_instance.to_dict()}, 201
+    return {cls.__name__.lower(): new_instance.to_dict()}, 201
 
 def helper_get_sorted_query(cls, sort_param):
     if sort_param == "asc":
