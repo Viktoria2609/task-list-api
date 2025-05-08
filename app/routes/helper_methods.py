@@ -1,4 +1,5 @@
 from flask import abort,make_response
+from sqlalchemy import asc, desc
 from ..db import db
 
 def validate_model(cls, model_id):
@@ -29,3 +30,10 @@ def helper_model_from_dict(cls, request_body):
     db.session.commit()
 
     return {"task": new_instance.to_dict()}, 201
+
+def helper_get_sorted_query(cls, sort_param):
+    if sort_param == "asc":
+        return db.select(cls).order_by(asc(cls.title))
+    elif sort_param == "desc":
+        return db.select(cls).order_by(desc(cls.title))
+    return db.select(cls)
