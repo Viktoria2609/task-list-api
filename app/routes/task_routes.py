@@ -1,7 +1,7 @@
 from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
 from ..db import db
-from .helper_methods import validate_model, helper_model_from_dict
+from .helper_methods import validate_model, helper_model_from_dict, helper_get_sorted_query
 
 bp = Blueprint("tasks_bp", __name__, url_prefix = "/tasks")
 
@@ -13,7 +13,9 @@ def create_task():
     
 @bp.get("")
 def get_all_tasks():
-    tasks = db.session.execute(db.select(Task)).scalars()
+    sort_param = request.args.get("sort") 
+    query = helper_get_sorted_query(Task, sort_param)
+    tasks = db.session.execute(query).scalars()
     task_list = [task.to_dict() for task in tasks]
     return task_list
 
