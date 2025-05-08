@@ -52,7 +52,8 @@ def mark_complete(task_id):
             "text": f"Someone just completed the task {task.title}"
         }
         headers = {
-            "Authorization": f"Bearer {slack_token}"
+            "Authorization": f"Bearer {slack_token}",
+            "Content-type": "application/json"
         }
         requests.post("https://slack.com/api/chat.postMessage", json=slack_message, headers=headers)
     return Response(status=204, mimetype="application/json")
