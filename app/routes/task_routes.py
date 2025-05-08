@@ -1,5 +1,6 @@
 from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
+from datetime import datetime
 from ..db import db
 from .helper_methods import validate_model, helper_model_from_dict, helper_get_sorted_query
 
@@ -35,6 +36,20 @@ def update_one_task(task_id):
 
     db.session.commit()
 
+    return Response(status=204, mimetype="application/json")
+
+@bp.patch("/<task_id>/mark_complete")
+def mark_complete(task_id):
+    task = validate_model(Task, task_id)
+    task.completed_at = datetime.now()
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
+
+@bp.patch("/<task_id>/mark_incomplete")
+def mark_incomplete(task_id):
+    task = validate_model(Task, task_id)
+    task.completed_at = None
+    db.session.commit()
     return Response(status=204, mimetype="application/json")
 
 @bp.delete("/<task_id>")
