@@ -47,15 +47,17 @@ def mark_complete(task_id):
     db.session.commit()
     slack_token = os.environ.get("SLACKBOT_TOKEN")
     if slack_token:
-        slack_message = {
-            "channel": "task-notifications",
-            "text": f"Someone just completed the task {task.title}"
-        }
-        headers = {
-            "Authorization": f"Bearer {slack_token}",
-            "Content-type": "application/json"
-        }
-        requests.post("https://slack.com/api/chat.postMessage", json=slack_message, headers=headers)
+        requests.post(
+            "https://slack.com/api/chat.postMessage",
+            headers = {
+                "Authorization": f"Bearer {slack_token}",
+                "Content-type": "application/json"
+             },
+            json = {
+                "channel": "test-slack-api",
+                "text": f"Someone just completed the task {task.title}"
+            }
+        )
     return Response(status=204, mimetype="application/json")
 
 @bp.patch("/<task_id>/mark_incomplete")
