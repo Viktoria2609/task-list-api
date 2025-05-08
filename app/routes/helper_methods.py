@@ -18,6 +18,10 @@ def validate_model(cls, model_id):
     return model
 
 def helper_model_from_dict(cls, request_body):
+    required_fields = ["title", "description"]
+    for field in required_fields:
+        if field not in request_body:
+            abort(make_response({"details": "Invalid data"}, 400))
 
     new_instance = cls.from_dict(request_body)
     
