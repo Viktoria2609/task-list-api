@@ -1,6 +1,8 @@
 from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
 from datetime import datetime
+import os
+import requests
 from ..db import db
 from .helper_methods import validate_model, helper_model_from_dict, helper_get_sorted_query
 
@@ -43,6 +45,16 @@ def mark_complete(task_id):
     task = validate_model(Task, task_id)
     task.completed_at = datetime.now()
     db.session.commit()
+    slack_token = os.environ.get("SLACKBOT_TOKEN")
+    if slack_token:
+        slack_message = {
+            "channel": "task-notifications",
+            "text": f"Someone just completed the task {task.title}"
+        }
+        headers = {
+            "Authorization": f"Bearer {slack_token}"
+        }
+        requests.post("https://slack.com/api/chat.postMessage", json=slack_message, headers=headers)
     return Response(status=204, mimetype="application/json")
 
 @bp.patch("/<task_id>/mark_incomplete")
