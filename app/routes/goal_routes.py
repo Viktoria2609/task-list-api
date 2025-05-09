@@ -19,17 +19,19 @@ def add_tasks_to_goal_id(goal_id):
     request_body = request.get_json()
     
     task_ids = request_body.get("task_ids", [])
-    goal.tasks.clear()
+    # goal.tasks.clear()
+    for task in goal.tasks:
+        task.goal_id = None
     
     for id in task_ids:
         task = validate_model(Task, id)
         task.goal_id = goal.id
-        goal.tasks.append(task)
+        # goal.tasks.append(task)
 
     db.session.commit()
 
     return {
-        "id": goal.id,
+        "id": int(goal.id),
         "task_ids": task_ids
     }, 200
 
